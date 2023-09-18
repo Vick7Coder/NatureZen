@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -60,16 +61,26 @@ public class AuthController {
     @PostMapping("/login")
     @Operation(summary = "Đăng nhập")
     public ResponseEntity<?> login(@Valid @RequestBody LoginDto loginDto){
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        ResponseCookie jwtCookie = jwtTokenService.generateJwtCookie(userDetails);
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(i ->i.getAuthority())
-                .collect(Collectors.toList());
+        User us = userService.getUserByUsername(loginDto.getUsername());
+        if(us == null || us.isEnabled() == false){
+            return ResponseEntity.badRequest().body(new MessageResp("User does not exist or is not enabled!"));
+        }
+        try {
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            ResponseCookie jwtCookie = jwtTokenService.generateJwtCookie(userDetails);
+            List<String> roles = userDetails.getAuthorities().stream()
+                    .map(i ->i.getAuthority())
+                    .collect(Collectors.toList());
 
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                .body(new UserI4Resp(userDetails.getUser()));
+            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                    .body(new UserI4Resp(userDetails.getUser()));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResp("Invalid username or password!"));
+
+        }
+
     }
     @PostMapping("/logout")
     @Operation(summary = "Đăng xuất")
