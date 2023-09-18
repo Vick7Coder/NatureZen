@@ -27,8 +27,8 @@ public class Tour {
     @Column(columnDefinition = "MEDIUMBLOB")
     private String image;
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "operation_team_id", referencedColumnName = "id")
-    private OperationTeam operationTeam;
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    private Category category;
     private boolean isActive;
     private int totalSlot;
     private LocalDateTime beginDate;

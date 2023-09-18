@@ -99,6 +99,7 @@ public class AuthController {
     }
 
     @GetMapping("/register/verifyEmail")
+    @Operation(summary = "Xác thực email")
     public ResponseEntity<?> verifyEmail(@RequestParam("token") String token){
        // String url = applicationUrl(servletRequest)+"/register/resend-verification-token?token="+token;
         VerificationToken theToken = verificationTokenRepository.findByToken(token);
@@ -116,6 +117,7 @@ public class AuthController {
       //  return ResponseEntity.badRequest().body(new MessageResp("Invalid verification link, <a href=\""+url+"\"> Get a new verification link. </a>"));
     }
     @GetMapping("/register/resend-verification-token")
+    @Operation(summary = "Gửi lại token xác thực đến mail")
     public ResponseEntity<?> resendVerificationToken(@RequestParam("token") String oldToken,
                                           final HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
         VerificationToken verificationToken = userService.generateNewVerificationToken(oldToken);
@@ -131,6 +133,7 @@ public class AuthController {
         log.info("Click the link to verify your registration :  {}", url);
     }
     @PostMapping("/password-reset-request")
+    @Operation(summary = "Yêu cầu reset password")
     public ResponseEntity<?> resetPasswordRequest(@RequestBody PasswordDto passwordRequestUtil,
                                        final HttpServletRequest servletRequest)
             throws MessagingException, UnsupportedEncodingException {
@@ -164,6 +167,7 @@ public class AuthController {
     }
 
     @PostMapping("/reset-password")
+    @Operation(summary = "Đặt lại mật khẩu")
     public ResponseEntity<?> resetPassword(@RequestBody PasswordDto passwordRequestUtil,
                                 @RequestParam("token") String token){
         String tokenVerificationResult = userService.validatePasswordResetToken(token);
