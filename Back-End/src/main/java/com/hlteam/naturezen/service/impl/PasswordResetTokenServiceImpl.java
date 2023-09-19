@@ -2,15 +2,12 @@ package com.hlteam.naturezen.service.impl;
 
 import com.hlteam.naturezen.entity.PasswordResetToken;
 import com.hlteam.naturezen.entity.User;
-import com.hlteam.naturezen.exception.NotFoundException;
 import com.hlteam.naturezen.repository.PasswordRequestTokenRepository;
 import com.hlteam.naturezen.service.PasswordResetTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.Calendar;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
