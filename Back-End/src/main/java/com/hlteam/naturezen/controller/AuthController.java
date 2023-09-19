@@ -110,7 +110,7 @@ public class AuthController {
         if (verificationResult.equalsIgnoreCase("valid")){
             return "Email verified successfully. Now you can login to your account";
         }
-       return "Invalid verification link, <a href=\""+url+"\"> Get a new verification link. </a>";
+       return emailService.ResendVerificationTokenForm(url);
     }
     @GetMapping("/register/resend-verification-token")
     @Operation(summary = "Gửi lại token xác thực đến mail")
