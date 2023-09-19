@@ -100,21 +100,17 @@ public class AuthController {
 
     @GetMapping("/register/verifyEmail")
     @Operation(summary = "Xác thực email")
-    public ResponseEntity<?> verifyEmail(@RequestParam("token") String token){
-       // String url = applicationUrl(servletRequest)+"/register/resend-verification-token?token="+token;
+    public String verifyEmail(@RequestParam("token") String token, HttpServletRequest servletRequest){
+        String url = applicationUrl(servletRequest)+"/api/auth/register/resend-verification-token?token="+token;
         VerificationToken theToken = verificationTokenRepository.findByToken(token);
         if (theToken.getUser().isEnabled()){
-            return ResponseEntity.badRequest().body(new MessageResp("This account has already been verified. Please login."));
+            return "This account has already been verified. Please login.";
         }
-
         String verificationResult = userService.validateToken(token);
-
         if (verificationResult.equalsIgnoreCase("valid")){
-            return ResponseEntity.ok(new MessageResp("Email verified successfully. Now you can login to your account"));
+            return "Email verified successfully. Now you can login to your account";
         }
-        return null;
-
-      //  return ResponseEntity.badRequest().body(new MessageResp("Invalid verification link, <a href=\""+url+"\"> Get a new verification link. </a>"));
+       return "Invalid verification link, <a href=\""+url+"\"> Get a new verification link. </a>";
     }
     @GetMapping("/register/resend-verification-token")
     @Operation(summary = "Gửi lại token xác thực đến mail")

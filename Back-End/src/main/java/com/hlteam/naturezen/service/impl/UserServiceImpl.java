@@ -112,14 +112,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String validateToken(String tToken) {
-        VerificationToken token = tokenRepository.findByToken(tToken);
-        if (token == null){
+        VerificationToken tk = tokenRepository.findByToken(tToken);
+        if (tk == null){
             return "Invalid verification token!";
         }
-        User user = token.getUser();
+        User user = tk.getUser();
         Calendar cal = Calendar.getInstance();
-        if(token.getTokenExpirationTime().getTime() - cal.getTime().getTime() <=0){
-            tokenRepository.delete(token);
+        System.out.println("Token="+tk.getTokenExpirationTime().getTime());
+        System.out.println("Cal ="+cal.getTime().getTime());
+        if(tk.getExpirationTime().getTime() - cal.getTime().getTime() <= 0){
+            //tokenRepository.delete(tk);
             return "Token already expired";
         }
         user.setEnabled(true);
