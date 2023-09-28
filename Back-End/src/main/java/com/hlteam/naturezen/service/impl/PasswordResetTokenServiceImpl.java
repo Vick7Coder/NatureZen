@@ -24,7 +24,7 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
     public String validatePasswordResetToken(String passwordResetToken) {
         PasswordResetToken passwordToken = passwordRequestTokenRepository.findByToken(passwordResetToken);
         if(passwordToken == null){
-            return "Invalid Verication Token!";
+            return "Invalid Password Reset Token!";
         }
         User user = passwordToken.getUser();
         Calendar cal = Calendar.getInstance();

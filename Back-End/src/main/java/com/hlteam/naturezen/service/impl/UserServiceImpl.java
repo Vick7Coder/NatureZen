@@ -118,8 +118,6 @@ public class UserServiceImpl implements UserService {
         }
         User user = tk.getUser();
         Calendar cal = Calendar.getInstance();
-        System.out.println("Token="+tk.getTokenExpirationTime().getTime());
-        System.out.println("Cal ="+cal.getTime().getTime());
         if(tk.getExpirationTime().getTime() - cal.getTime().getTime() <= 0){
             //tokenRepository.delete(tk);
             return "Token already expired";

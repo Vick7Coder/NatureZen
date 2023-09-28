@@ -22,7 +22,7 @@ public class EmailServiceImpl implements EmailService {
            String mailContent = VerificationMailForm(user, url);
            MimeMessage message = javaMailSender.createMimeMessage();
            var messageHelper = new MimeMessageHelper(message);
-           messageHelper.setFrom("hieuph.dev@gmail.com", senderName);
+           messageHelper.setFrom("contact.lwind@gmail.com", senderName);
            messageHelper.setTo(user.getEmail());
            messageHelper.setSubject(subject);
            messageHelper.setText(mailContent, true);
