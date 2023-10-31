@@ -74,8 +74,10 @@ public class AuthController {
                     .map(i ->i.getAuthority())
                     .collect(Collectors.toList());
 
+            User u = userDetails.getUser();
+
             return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                    .body(new UserI4Resp(userDetails.getUser()));
+                    .body(new UserI4Resp(u.getId(), u.getFirstName(), u.getLastName(), u.getUsername(), u.getEmail(), u.getPhoneNumber(), u.getAddress(), u.isGender(), u.getBirthDay(), u.getCart(), u.getOrder(),u.isEnabled(), u.getRoles()));
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResp("Invalid username or password!"));
 

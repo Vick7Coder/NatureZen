@@ -30,7 +30,7 @@ public class CategoryController {
         List<Category> categories = categorySevice.findAllEnabled();
         return ResponseEntity.ok(categories);
     }
-    @PostMapping("/create")
+    @PostMapping("/")
     @Operation(summary = "Thêm category mới")
     public ResponseEntity<?> createCategory(@Valid @RequestBody CategoryDto categoryDto){
         Category category = categorySevice.createCategory(categoryDto);
