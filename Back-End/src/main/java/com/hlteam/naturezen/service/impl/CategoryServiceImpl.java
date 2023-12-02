@@ -1,24 +1,46 @@
 package com.hlteam.naturezen.service.impl;
 
+import com.hlteam.naturezen.Filter.Category.CategoryFilter;
+import com.hlteam.naturezen.Filter.Category.GenericCategorySpecification;
 import com.hlteam.naturezen.dto.request.CategoryDto;
 import com.hlteam.naturezen.entity.Category;
 import com.hlteam.naturezen.exception.NotFoundException;
 import com.hlteam.naturezen.repository.CategoryRepository;
 import com.hlteam.naturezen.service.CategorySevice;
+import com.hlteam.naturezen.service.payload.PagingRequest;
+import com.hlteam.naturezen.service.payload.common.Pagination;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class CategoryServiceImpl implements CategorySevice {
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private GenericCategorySpecification genericCategorySpecification;
     @Override
     public List<Category> findAll() {
         List<Category> list = categoryRepository.findAll(Sort.by("id").descending());
         return list;
+    }
+
+    @Override
+    public List<Category> findAll(CategoryFilter categoryFilter, PagingRequest pagingRequest) {
+        List<Category> categoryList =categoryRepository
+                .findAll(genericCategorySpecification.generic(categoryFilter), Pagination.initPageable(pagingRequest))
+                .getContent();
+        List<Category> respList = new ArrayList<>();
+        if(!categoryList.isEmpty()){
+            for(int i = 0; i< categoryList.size(); i++){
+                respList.add(categoryList.get(i));
+            }
+            return respList;
+        }
+        return null;
     }
 
     @Override
@@ -55,5 +77,10 @@ public class CategoryServiceImpl implements CategorySevice {
     public void deleteCategory(int id) {
         Category category = categoryRepository.findById(id).orElseThrow(()->new NotFoundException("Not Found: "+id));
         categoryRepository.delete(category);
+    }
+
+    @Override
+    public Long count(CategoryFilter categoryFilter) {
+        return categoryRepository.count(genericCategorySpecification.generic(categoryFilter));
     }
 }

@@ -5,9 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4348159e-571b-4e77-b1e4-c03ddc438fa0" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Back-End/src/main/java/com/hlteam/naturezen/Filter/Category/CategoryFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Back-End/src/main/java/com/hlteam/naturezen/Filter/Category/GenericCategorySpecification.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Back-End/src/main/java/com/hlteam/naturezen/NatureZenApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/Back-End/src/main/java/com/hlteam/naturezen/NatureZenApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Back-End/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/Back-End/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Back-End/src/main/java/com/hlteam/naturezen/controller/CategoryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Back-End/src/main/java/com/hlteam/naturezen/controller/CategoryController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Back-End/src/main/java/com/hlteam/naturezen/repository/CategoryRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Back-End/src/main/java/com/hlteam/naturezen/repository/CategoryRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Back-End/src/main/java/com/hlteam/naturezen/service/CategorySevice.java" beforeDir="false" afterPath="$PROJECT_DIR$/Back-End/src/main/java/com/hlteam/naturezen/service/CategorySevice.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Back-End/src/main/java/com/hlteam/naturezen/service/TourService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Back-End/src/main/java/com/hlteam/naturezen/service/TourService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Back-End/src/main/java/com/hlteam/naturezen/service/impl/CategoryServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/Back-End/src/main/java/com/hlteam/naturezen/service/impl/CategoryServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Back-End/src/main/java/com/hlteam/naturezen/service/impl/TourServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/Back-End/src/main/java/com/hlteam/naturezen/service/impl/TourServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,26 +42,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "D:/teaching/TLCN/Source/NatureZen",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "spring.configuration.checksum": "e366e586e67b2b37a1ea8bbe5ba5dc30",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/teaching/TLCN/Source/NatureZen&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;spring.configuration.checksum&quot;: &quot;e366e586e67b2b37a1ea8bbe5ba5dc30&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="NatureZenApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="NatureZen" />
@@ -81,7 +87,8 @@
       <workItem from="1699523145644" duration="154000" />
       <workItem from="1700983788499" duration="5143000" />
       <workItem from="1701074933985" duration="1534000" />
-      <workItem from="1701185260965" duration="8463000" />
+      <workItem from="1701185260965" duration="8644000" />
+      <workItem from="1701498880348" duration="3918000" />
     </task>
     <servers />
   </component>
