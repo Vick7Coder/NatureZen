@@ -4,3 +4,5 @@
 ~~~
 docker run --detach --env MYSQL_ROOT_PASSWORD='your_root_password' --env MYSQL_USER=natureAdmin --env MYSQL_PASSWORD=abc123 --env MYSQL_DATABASE=nature_zen --name mysql --publish 3306:3306 mysql:8-oracle
 ~~~
+**REST API**
+[Document here](http://localhost:8080/swagger-ui/index.html#/ "Swagger-ui").
