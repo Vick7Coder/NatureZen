@@ -9,5 +9,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class TourFilter {
+    public static final String FIELD_ABSTR = "abstr";
+    public static final String FIELD_CATEGORY = "category";
+    public static final String FIELD_ACTIVE = "active";
+
+    private String abstr;
+    private Long category;
+    private Boolean active;
+
 
 }
