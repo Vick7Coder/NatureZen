@@ -24,8 +24,6 @@ public class TourDto {
     private LocalDateTime beginDate;
     private LocalDateTime finishDate;
     private LocalDateTime closeDate;
-    private int currentSlot;
-    private int subSlot;
     private double price;
     private Set<Image> images = new HashSet<>();
 }
