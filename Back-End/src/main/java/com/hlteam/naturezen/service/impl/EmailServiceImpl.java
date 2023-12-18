@@ -16,22 +16,22 @@ public class EmailServiceImpl implements EmailService {
     private JavaMailSender javaMailSender;
     @Override
     public void sendVerificationEmail(User user, String url) {
-       try {
-           String subject = "Kích hoạt tài khoản";
-           String senderName = "NatureZen";
-           String mailContent = VerificationMailForm(user, url);
-           MimeMessage message = javaMailSender.createMimeMessage();
-           var messageHelper = new MimeMessageHelper(message);
-           messageHelper.setFrom("contact.lwind@gmail.com", senderName);
-           messageHelper.setTo(user.getEmail());
-           messageHelper.setSubject(subject);
-           messageHelper.setText(mailContent, true);
-           javaMailSender.send(message);
-           log.info("Send email verify account [" + user.getEmail() + "]");
-       }catch (Exception exception){
-           log.error(exception.getMessage());
+        try {
+            String subject = "Kích hoạt tài khoản";
+            String senderName = "NatureZen";
+            String mailContent = VerificationMailForm(user, url);
+            MimeMessage message = javaMailSender.createMimeMessage();
+            var messageHelper = new MimeMessageHelper(message);
+            messageHelper.setFrom("contact.lwind@gmail.com", senderName);
+            messageHelper.setTo(user.getEmail());
+            messageHelper.setSubject(subject);
+            messageHelper.setText(mailContent, true);
+            javaMailSender.send(message);
+            log.info("Send email verify account [" + user.getEmail() + "]");
+        }catch (Exception exception){
+            log.error(exception.getMessage());
 
-       }
+        }
 
 
     }
@@ -630,7 +630,7 @@ public class EmailServiceImpl implements EmailService {
                 "                     \n" +
                 "                      <td>\n" +
                 "                        <h1>Đăng kí tài khoản</h1>\n" +
-                "                        <h2>Xin chào "+user.getFirstName()+",</h2>\n" +
+                "                        <h2>Xin chào "+user.getUsername()+",</h2>\n" +
                 "                        <p>Cảm ơn bạn đã quan tâm đến dịch vụ của chúng tôi. Vui lòng nhấn vào nút bên dưới để hoàn tất đăng kí tài khoản! </p>\n" +
                 "                        <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"btn btn-primary\">\n" +
                 "                          <tbody>\n" +
@@ -725,7 +725,7 @@ public class EmailServiceImpl implements EmailService {
                 "                                </tr>\n" +
                 "                                <tr>\n" +
                 "                                    <td style=\"padding:0 35px;\">\n" +
-                "                                        <h1 style=\"color:#1e1e2d; font-weight:500; margin:0;font-size:32px;font-family:'Rubik',sans-serif;\">Chào "+ user.getFirstName()+ ", bạn đã yêu cầu đặt lại mật khẩu của bạn</h1>\n" +
+                "                                        <h1 style=\"color:#1e1e2d; font-weight:500; margin:0;font-size:32px;font-family:'Rubik',sans-serif;\">Chào "+ user.getUsername()+ ", bạn đã yêu cầu đặt lại mật khẩu của bạn</h1>\n" +
                 "                                        <span\n" +
                 "                                            style=\"display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;\"></span>\n" +
                 "                                        <p style=\"color:#455056; font-size:15px;line-height:24px; margin:0;\">\n" +

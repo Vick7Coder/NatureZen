@@ -1,86 +1,73 @@
 package com.hlteam.naturezen.service.impl;
 
-import com.hlteam.naturezen.Filter.Category.CategoryFilter;
-import com.hlteam.naturezen.Filter.Category.GenericCategorySpecification;
-import com.hlteam.naturezen.dto.request.CategoryDto;
+import java.util.List;
+
+import com.hlteam.naturezen.dto.request.CreateCategoryRequest;
 import com.hlteam.naturezen.entity.Category;
 import com.hlteam.naturezen.exception.NotFoundException;
 import com.hlteam.naturezen.repository.CategoryRepository;
-import com.hlteam.naturezen.service.CategorySevice;
-import com.hlteam.naturezen.service.payload.PagingRequest;
-import com.hlteam.naturezen.service.payload.common.Pagination;
+import com.hlteam.naturezen.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
-public class CategoryServiceImpl implements CategorySevice {
+public class CategoryServiceImpl implements CategoryService {
+
     @Autowired
     private CategoryRepository categoryRepository;
-    @Autowired
-    private GenericCategorySpecification genericCategorySpecification;
+
     @Override
     public List<Category> findAll() {
+        // TODO Auto-generated method stub
         List<Category> list = categoryRepository.findAll(Sort.by("id").descending());
         return list;
     }
 
     @Override
-    public List<Category> findAll(CategoryFilter categoryFilter, PagingRequest pagingRequest) {
-        List<Category> categoryList =categoryRepository
-                .findAll(genericCategorySpecification.generic(categoryFilter), Pagination.initPageable(pagingRequest))
-                .getContent();
-        List<Category> respList = new ArrayList<>();
-        if(!categoryList.isEmpty()){
-            for(int i = 0; i< categoryList.size(); i++){
-                respList.add(categoryList.get(i));
-            }
-            return respList;
-        }
-        return null;
-    }
-
-    @Override
-    public List<Category> findAllEnabled() {
-        List<Category> list = categoryRepository.findAllByEnabled();
-        return list;
-    }
-
-    @Override
-    public Category createCategory(CategoryDto categoryDto) {
+    public Category createCategory(CreateCategoryRequest request) {
+        // TODO Auto-generated method stub
         Category category = new Category();
-        category.setName(categoryDto.getName());
-        category.setEnabled(false);
+        category.setName(request.getName());
+        category.setEnable(false);
         categoryRepository.save(category);
         return category;
     }
 
     @Override
-    public Category updateCategory(int id, CategoryDto categoryDto) {
-        Category category = categoryRepository.findById(id).orElseThrow(()->new NotFoundException("Not Found: "+id));
-        category.setName(categoryDto.getName());
+    public Category updateCategory(long id, CreateCategoryRequest request) {
+        // TODO Auto-generated method stub
+        Category category = categoryRepository.findById(id).orElseThrow(() -> new NotFoundException("Not Found Category With Id: " + id));
+        category.setName(request.getName());
         categoryRepository.save(category);
         return category;
     }
 
     @Override
-    public void enabledCategory(int id) {
-        Category category = categoryRepository.findById(id).orElseThrow(()->new NotFoundException("Not Found: "+id));
-        category.setEnabled(!category.isEnabled());
+    public void enableCategory(long id) {
+        // TODO Auto-generated method stub
+        Category category = categoryRepository.findById(id).orElseThrow(() -> new NotFoundException("Not Found Category With Id: " + id));
+        if(category.isEnable()){
+            category.setEnable(false);
+        } else{
+            category.setEnable(true);
+        }
         categoryRepository.save(category);
     }
 
     @Override
-    public void deleteCategory(int id) {
-        Category category = categoryRepository.findById(id).orElseThrow(()->new NotFoundException("Not Found: "+id));
+    public void deleteCategory(long id) {
+        // TODO Auto-generated method stub
+        Category category = categoryRepository.findById(id).orElseThrow(() -> new NotFoundException("Not Found Category With Id: " + id));
         categoryRepository.delete(category);
     }
 
     @Override
-    public Long count(CategoryFilter categoryFilter) {
-        return categoryRepository.count(genericCategorySpecification.generic(categoryFilter));
+    public List<Category> getListEnabled() {
+        // TODO Auto-generated method stub
+        List<Category> list = categoryRepository.findALLByEnabled();
+        return list;
     }
+    
 }

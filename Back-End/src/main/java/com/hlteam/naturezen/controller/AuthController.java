@@ -1,11 +1,13 @@
 package com.hlteam.naturezen.controller;
 
-import com.hlteam.naturezen.dto.request.LoginDto;
-import com.hlteam.naturezen.dto.request.PasswordDto;
-import com.hlteam.naturezen.dto.request.UserDto;
-import com.hlteam.naturezen.dto.response.MessageResp;
-import com.hlteam.naturezen.dto.response.UserI4Resp;
-import com.hlteam.naturezen.entity.PasswordResetToken;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+
+import com.hlteam.naturezen.dto.request.ChangePasswordRequest;
 import com.hlteam.naturezen.entity.User;
 import com.hlteam.naturezen.entity.VerificationToken;
 import com.hlteam.naturezen.event.OnRegistrationCompleteEvent;
@@ -15,7 +17,6 @@ import com.hlteam.naturezen.security.service.UserDetailsImpl;
 import com.hlteam.naturezen.service.EmailService;
 import com.hlteam.naturezen.service.PasswordResetTokenService;
 import com.hlteam.naturezen.service.UserService;
-import io.swagger.v3.oas.annotations.Operation;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -32,74 +33,72 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import com.hlteam.naturezen.dto.request.CreateUserRequest;
+import com.hlteam.naturezen.dto.request.LoginRequest;
+import com.hlteam.naturezen.dto.response.MessageResponse;
+import com.hlteam.naturezen.dto.response.UserInfoResponse;
 
+
+import io.swagger.v3.oas.annotations.Operation;
 @Slf4j
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "*",maxAge = 3600)
 public class AuthController {
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtTokenService jwtUtils;
+
     @Autowired
     private UserService userService;
     @Autowired
-    private JwtTokenService jwtTokenService;
-    @Autowired
     private ApplicationEventPublisher publisher;
-    @Autowired
-    private AuthenticationManager authenticationManager;
+
     @Autowired
     private VerificationTokenRepository verificationTokenRepository;
     @Autowired
     private EmailService emailService;
     @Autowired
     private PasswordResetTokenService passwordResetTokenService;
-
     @PostMapping("/login")
-    @Operation(summary = "Đăng nhập")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginDto loginDto){
-        User us = userService.getUserByUsername(loginDto.getUsername());
+    @Operation(summary="Đăng nhập")
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
+        User us = userService.getUserByUsername(loginRequest.getUsername());
         if(us == null || us.isEnabled() == false){
-            return ResponseEntity.badRequest().body(new MessageResp("User does not exist or is not enabled!"));
+            return ResponseEntity.badRequest().body(new MessageResponse("User does not exist or is not enabled!"));
         }
         try {
-            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
+            Authentication authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
+                            loginRequest.getPassword()));
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            ResponseCookie jwtCookie = jwtTokenService.generateJwtCookie(userDetails);
+
+            ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+
             List<String> roles = userDetails.getAuthorities().stream()
-                    .map(i ->i.getAuthority())
+                    .map(item -> item.getAuthority())
                     .collect(Collectors.toList());
-
-            User u = userDetails.getUser();
-
             return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                    .body(new UserI4Resp(u.getId(), u.getFirstName(), u.getLastName(), u.getUsername(), u.getEmail(), u.getPhoneNumber(), u.getAddress(), u.isGender(), u.getBirthDay(), u.getCart(), u.getOrder(),u.isEnabled(), u.getRoles()));
+                    .body(new UserInfoResponse(userDetails.getUser().getId(), userDetails.getUsername(), userDetails.getUser().getEmail(), roles));
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResp("Invalid username or password!"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Invalid username or password!"));
 
         }
-
-    }
-    @PostMapping("/logout")
-    @Operation(summary = "Đăng xuất")
-    public ResponseEntity<?> logout(){
-        ResponseCookie cookie = jwtTokenService.getCleanJwtCookie();
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(new MessageResp("You've been logout!"));
     }
 
     @PostMapping("/register")
     @Operation(summary="Đăng ký")
-    public ResponseEntity<?> register(@Valid @RequestBody UserDto userDto, final HttpServletRequest request){
-        User user = userService.register(userDto);
+    public ResponseEntity<?> register(@Valid @RequestBody CreateUserRequest cRequest, final HttpServletRequest request){
+        User user = userService.register(cRequest);
         publisher.publishEvent(new OnRegistrationCompleteEvent(user, applicationUrl(request)));
-        return ResponseEntity.ok(new MessageResp("User registered successfully! Please check your email to complete your registration."));
+        return ResponseEntity.ok(new MessageResponse("User registered successfully! Please check your email to complete your registration."));
     }
-
     @GetMapping("/register/verifyEmail")
     @Operation(summary = "Xác thực email")
     public String verifyEmail(@RequestParam("token") String token, HttpServletRequest servletRequest){
@@ -112,16 +111,16 @@ public class AuthController {
         if (verificationResult.equalsIgnoreCase("valid")){
             return "Email verified successfully. Now you can login to your account";
         }
-       return emailService.ResendVerificationTokenForm(url);
+        return emailService.ResendVerificationTokenForm(url);
     }
     @GetMapping("/register/resend-verification-token")
     @Operation(summary = "Gửi lại token xác thực đến mail")
     public ResponseEntity<?> resendVerificationToken(@RequestParam("token") String oldToken,
-                                          final HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
+                                                     final HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
         VerificationToken verificationToken = userService.generateNewVerificationToken(oldToken);
         User theUser = verificationToken.getUser();
         resendRegistrationVerificationTokenEmail(theUser, applicationUrl(request), verificationToken);
-        return ResponseEntity.ok().body(new MessageResp("A new verification link has been sent to your email, please, check to activate your account"));
+        return ResponseEntity.ok().body(new MessageResponse("A new verification link has been sent to your email, please, check to activate your account"));
     }
     private void resendRegistrationVerificationTokenEmail(User theUser, String applicationUrl,
                                                           VerificationToken verificationToken) throws MessagingException, UnsupportedEncodingException {
@@ -130,66 +129,23 @@ public class AuthController {
         emailService.sendVerificationEmail(theUser, url);
         log.info("Click the link to verify your registration :  {}", url);
     }
-    @PostMapping("/password-reset-request")
-    @Operation(summary = "Yêu cầu reset password")
-    public ResponseEntity<?> resetPasswordRequest(@RequestBody PasswordDto passwordRequestUtil,
-                                       final HttpServletRequest servletRequest)
-            throws MessagingException, UnsupportedEncodingException {
 
-        Optional<User> user = userService.findByEmail(passwordRequestUtil.getEmail());
-        PasswordResetToken oldPass = passwordResetTokenService.IsHaving(passwordRequestUtil.getEmail());
-        String passwordResetUrl = "";
-        if(oldPass == null){
-
-            if (user.isPresent()) {
-                String passwordResetToken = UUID.randomUUID().toString();
-                userService.createPasswordResetTokenForUser(user.get(), passwordResetToken);
-                passwordResetUrl = passwordResetEmailLink(user.get(), applicationUrl(servletRequest), passwordResetToken);
-            }
-            return ResponseEntity.ok().body(new MessageResp(passwordResetUrl));
-        }
-        else {
-            PasswordResetToken newToken = passwordResetTokenService.generateNewResetPasswordToken(oldPass.getToken());
-            User theUser = newToken.getUser();
-            passwordResetUrl = passwordResetEmailLink(theUser, applicationUrl(servletRequest), newToken.getToken());
-            return ResponseEntity.ok().body(new MessageResp(passwordResetUrl));
-        }
-
-    }
-    private String passwordResetEmailLink(User user, String applicationUrl,
-                                          String passwordToken) throws MessagingException, UnsupportedEncodingException {
-        String url = applicationUrl+"/api/auth/reset-password?token="+passwordToken;
-        emailService.sendPasswordResetVerificationEmail(user, url);
-        log.info("Click the link to reset your password :  {}", url);
-        return url;
-    }
-
-    @PostMapping("/reset-password")
-    @Operation(summary = "Đặt lại mật khẩu")
-    public ResponseEntity<?> resetPassword(@RequestBody PasswordDto passwordRequestUtil,
-                                @RequestParam("token") String token){
-        String tokenVerificationResult = userService.validatePasswordResetToken(token);
-        if (!tokenVerificationResult.equalsIgnoreCase("valid")) {
-            return ResponseEntity.badRequest().body(new MessageResp("Invalid token password reset token"));
-        }
-        User theUser = userService.findUserByPasswordToken(token);
-        if (theUser!=null) {
-            userService.changePassword(theUser, passwordRequestUtil.getNewPassword());
-            return ResponseEntity.ok().body(new MessageResp("Password has been reset successfully"));
-        }
-        return ResponseEntity.badRequest().body(new MessageResp("Invalid password reset token"));
+    @PostMapping("/logout")
+    @Operation(summary="Đăng xuất")
+    public ResponseEntity<?> logoutUser() {
+      ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
+      return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
+          .body(new MessageResponse("You've been logout!"));
     }
     @PostMapping("/change-password")
-    public ResponseEntity<?> changePassword(@RequestBody PasswordDto requestUtil){
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest requestUtil){
         Optional<User> user = userService.findByEmail(requestUtil.getEmail());
         if (!userService.oldPasswordIsValid(user.get(), requestUtil.getOldPassword())){
-            return ResponseEntity.badRequest().body(new MessageResp("Incorrect old password"));
+            return ResponseEntity.badRequest().body(new MessageResponse("Incorrect old password"));
         }
         userService.changePassword(user.get(), requestUtil.getNewPassword());
-        return ResponseEntity.ok().body(new MessageResp("Password changed successfully"));
+        return ResponseEntity.ok().body(new MessageResponse("Password changed successfully"));
     }
-
-
 
     public String applicationUrl (HttpServletRequest request){
         return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();

@@ -1,50 +1,53 @@
 package com.hlteam.naturezen.entity;
 
+import java.util.Set;
+
 import jakarta.persistence.*;
-import lombok.*;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
-@Getter
-@Setter
-@EqualsAndHashCode
-@NoArgsConstructor
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "orders")
 public class Order {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private LocalDateTime date;
-    private String orderStatus;
-    private double amount;
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
-    private int tax;
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "payment_id", referencedColumnName = "id")
-    private Payment payment;
-    private int quantity;
-    private double totalPrice;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "order")
-    private List<OrderDetail> orderDetailList;
+    private long id;
 
-    @Override
-    public String toString() {
-        return "Order{" +
-                "id=" + id +
-                ", date=" + date +
-                ", orderStatus='" + orderStatus + '\'' +
-                ", amount=" + amount +
-                ", user=" + user.getUsername() +
-                ", tax=" + tax +
-                ", payment=" + payment +
-                ", quantity=" + quantity +
-                ", totalPrice=" + totalPrice +
-                ", orderDetailList=" + orderDetailList.size() +
-                '}';
-    }
+    private String firstname;
+
+    private String lastname;
+
+    private String country;
+
+    private String address;
+
+    private String town;
+
+    private String state;
+
+    private long postCode;
+
+    private String email;
+    
+    private String phone;
+
+    private String note;
+
+    private long totalPrice;
+
+    @ManyToOne
+    @JoinColumn(name="user_id")
+    private User user;
+
+    @OneToMany(mappedBy="order")
+    @JsonBackReference
+    private Set<OrderDetail> orderdetails; 
 }

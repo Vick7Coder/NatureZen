@@ -1,52 +1,54 @@
 package com.hlteam.naturezen.entity;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.sql.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-@Getter
-@Setter
-@EqualsAndHashCode
-@AllArgsConstructor
-@Entity
-@Table(name = "user", uniqueConstraints = @UniqueConstraint(columnNames = "username"))
-public class User {
 
+import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "user")
+public class User {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private String firstName;
-    private String lastName;
+    private long id;
+
     @Column(name="username",unique = true)
     private String username;
+
     @Column(name="email",unique = true)
     private String email;
+
+    private String firstname;
+
+    private String lastname;
+
     private String password;
-    private String phoneNumber;
+
+    private String country;
+
+    private String state;
+
     private String address;
-    private boolean gender;
-    private LocalDateTime birthDay;
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Cart cart;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Order> order;
+
+    private String phone;
+
+    @Column(name = "verification_code", length = 64)
+    private String verificationCode;
 
     private boolean enabled;
-    public User(){
-        this.cart = new Cart();
-        this.order = new ArrayList<>();
-        this.enabled = false;
-    }
-    @ManyToMany(fetch = FetchType.EAGER)
+
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",joinColumns = @JoinColumn(name = "user_id"),inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
-
 }

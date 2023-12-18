@@ -1,24 +1,23 @@
 package com.hlteam.naturezen.entity;
 
+
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name= "role")
 public class Role {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    private ERole name;
-
-
-
+    private ERole name;  
 }

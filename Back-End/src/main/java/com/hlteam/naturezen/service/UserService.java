@@ -1,19 +1,22 @@
 package com.hlteam.naturezen.service;
 
-import com.hlteam.naturezen.dto.request.UserDto;
+
+import com.hlteam.naturezen.dto.request.ChangePasswordRequest;
+import com.hlteam.naturezen.dto.request.CreateUserRequest;
+import com.hlteam.naturezen.dto.request.UpdateProfileRequest;
 import com.hlteam.naturezen.entity.User;
 import com.hlteam.naturezen.entity.VerificationToken;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-    User register(UserDto userDto);
-    User getUserByUsername(String username);
-    User updateUser(UserDto userDto);
+    
+    User register(CreateUserRequest request);
 
-    List<User> getUser();
+
+    User getUserByUsername(String username);
+
+    User updateUser(UpdateProfileRequest request);
     Optional<User> findByEmail(String email);
     void SavedVerificationToken(User user, String verificationToken);
     String validateToken(String tToken);
@@ -28,6 +31,5 @@ public interface UserService {
     void createPasswordResetTokenForUser(User user, String passwordResetToken);
 
     boolean oldPasswordIsValid(User user, String oldPassword);
-
 
 }

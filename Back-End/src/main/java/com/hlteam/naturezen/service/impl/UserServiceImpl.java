@@ -1,113 +1,115 @@
 package com.hlteam.naturezen.service.impl;
 
-import com.hlteam.naturezen.dto.request.UserDto;
+import java.util.*;
+
+import com.hlteam.naturezen.dto.request.ChangePasswordRequest;
+import com.hlteam.naturezen.dto.request.CreateUserRequest;
+import com.hlteam.naturezen.dto.request.UpdateProfileRequest;
 import com.hlteam.naturezen.entity.ERole;
 import com.hlteam.naturezen.entity.Role;
 import com.hlteam.naturezen.entity.User;
 import com.hlteam.naturezen.entity.VerificationToken;
 import com.hlteam.naturezen.exception.NotFoundException;
-import com.hlteam.naturezen.exception.UserAlreadyExistsException;
 import com.hlteam.naturezen.repository.RoleRepository;
 import com.hlteam.naturezen.repository.UserRepository;
 import com.hlteam.naturezen.repository.VerificationTokenRepository;
 import com.hlteam.naturezen.service.PasswordResetTokenService;
 import com.hlteam.naturezen.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+
 
 @Service
 public class UserServiceImpl implements UserService {
+
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private RoleRepository roleRepository;
+
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private PasswordEncoder encoder;
     @Autowired
     private VerificationTokenRepository tokenRepository;
     @Autowired
     private PasswordResetTokenService passwordResetTokenService;
+
     @Override
-    public User register(UserDto userDto) {
-        Optional<User> userRequest = this.findByEmail(userDto.getEmail());
-        if(userRequest.isPresent()){
-            throw new UserAlreadyExistsException(
-                    "User with email "+userDto.getEmail() + " already exists");
-        }
-        User nUser = new User();
-        nUser.setUsername(userDto.getUsername());
-        nUser.setFirstName(userDto.getFirstName());
-        nUser.setLastName(userDto.getLastName());
-        nUser.setEmail(userDto.getEmail());
-        nUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        nUser.setGender(userDto.isGender());
-        nUser.setBirthDay(userDto.getBirthDay());
-        nUser.setPhoneNumber(userDto.getPhoneNumber());
-        nUser.setAddress(userDto.getAddress());
-        Set<String> strRole = userDto.getRole();
-        Set<Role> roles = new HashSet<>();
-        if(strRole==null){
+    public User register(CreateUserRequest request) {
+        // TODO Auto-generated method stub
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(encoder.encode(request.getPassword()));
+        Set<String> strRoles = request.getRole();
+          Set<Role> roles = new HashSet<>();
+      
+          if (strRoles == null) {
             Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(userRole);
-        }else {
-            strRole.forEach(
-                    role ->{
-                        switch (role){
-                            case "admin":
-                                Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                        .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
-                                roles.add(adminRole);
-                                break;
-                            case "mod":
-                                Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-                                        .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
-                                roles.add(modRole);
-                                break;
-                            default:
-                                Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                                        .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
-                                roles.add(userRole);
-                        }
-                    }
-            );
-        }
-        nUser.setRoles(roles);
-        return userRepository.save(nUser);
-
-
-
+          } else {
+            strRoles.forEach(role -> {
+              switch (role) {
+              case "admin":
+                Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                roles.add(adminRole);
+      
+                break;
+              case "mod":
+                Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                roles.add(modRole);
+      
+                break;
+              default:
+                Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                roles.add(userRole);
+              }
+            });
+          }
+          user.setRoles(roles);
+          return userRepository.save(user);
     }
 
     @Override
     public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("Not Found User"));
+      // TODO Auto-generated method stub
+      User user = userRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("Not Found User"));
+      return user;
     }
 
     @Override
-    public User updateUser(UserDto userDto) {
-        return null;
-    }
-
-
-
-    @Override
-    public List<User> getUser() {
-        return userRepository.findAll();
+    public User updateUser(UpdateProfileRequest request) {
+      // TODO Auto-generated method stub
+      User user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new NotFoundException("Not Found User"));
+      user.setFirstname(request.getFirstname());
+      user.setLastname(request.getLastname());
+      user.setEmail(request.getEmail());
+      user.setCountry(request.getCountry());
+      user.setState(request.getState());
+      user.setAddress(request.getAddress());
+      user.setPhone(request.getPhone());
+      userRepository.save(user);
+      return user;
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
-       return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email);
     }
 
     @Override
     public void SavedVerificationToken(User user, String verToken) {
         var verificationToken = new VerificationToken(verToken, user);
         tokenRepository.save(verificationToken);
+
     }
 
     @Override
@@ -138,7 +140,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void changePassword(User theUser, String newPassword) {
-        theUser.setPassword(passwordEncoder.encode(newPassword));
+        theUser.setPassword(encoder.encode(newPassword));
         userRepository.save(theUser);
     }
 
@@ -155,11 +157,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public void createPasswordResetTokenForUser(User user, String passwordResetToken) {
         passwordResetTokenService.createPasswordResetTokenForUser(user, passwordResetToken);
-
     }
 
     @Override
     public boolean oldPasswordIsValid(User user, String oldPassword) {
-        return passwordEncoder.matches(oldPassword, user.getPassword());
+        return encoder.matches(oldPassword, user.getPassword());
     }
+
+
+
+
 }

@@ -1,7 +1,8 @@
 package com.hlteam.naturezen.entity;
 
-import jakarta.persistence.*;
 
+
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,8 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="category")
-public class Category {
+@Table(name = "tag")
+public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -19,4 +20,5 @@ public class Category {
     private String name;
 
     private boolean enable;
+
 }
