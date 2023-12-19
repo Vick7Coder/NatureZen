@@ -2,6 +2,7 @@ package com.hlteam.naturezen.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -97,8 +98,12 @@ public class AuthController {
     public ResponseEntity<?> register(@Valid @RequestBody CreateUserRequest cRequest, final HttpServletRequest request){
         User user = userService.register(cRequest);
         publisher.publishEvent(new OnRegistrationCompleteEvent(user, applicationUrl(request)));
-        return ResponseEntity.ok(new MessageResponse("User registered successfully! Please check your email to complete your registration."));
+        return ResponseEntity.ok(Map.of(
+                "message", "User registered successfully! Please check your email to complete your registration.",
+                "checkEmail", true
+        ));
     }
+
     @GetMapping("/register/verifyEmail")
     @Operation(summary = "Xác thực email")
     public String verifyEmail(@RequestParam("token") String token, HttpServletRequest servletRequest){
