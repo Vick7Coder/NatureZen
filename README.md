@@ -1,4 +1,11 @@
-# NatureZen
+### NatureZen - IT2 Project
+
+**Instructor:** *Lê Vĩnh Thịnh*
+
+Implemented by student group:
+
+- 20110483 - Phạm Hồng Hiệu
+- 20110520 - Phạm Văn Lương
 
 **Exploit DB with Docker Container**
 ~~~
