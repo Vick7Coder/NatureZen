@@ -9,8 +9,6 @@ Implemented by student group:
 
 **Tech Stack:**
 
-Tech Stack:
-
 <img src="https://angular.io/assets/images/logos/angular/angular.svg" width="24"> Angular
 
 <img src="https://www.vectorlogo.zone/logos/springio/springio-icon.svg" width="24"> Spring Boot
