@@ -1,0 +1,230 @@
+
+<p-toast></p-toast>
+
+<p-dialog [(visible)]="authModal" [style]="{width: '30vw'}"  [baseZIndex]="10000" [modal]="true" [dismissableMask]="true">
+    <p-tabView>
+        <p-tabPanel header="Đăng nhập">
+            <div class="p-field">
+                <label for="username">Tên đăng nhập: </label>
+                <input type="text" pInputText class="w-full" [(ngModel)]="loginForm.username" name="username">
+              </div>
+              <div class="p-field">
+                <label for="password">Mật khẩu: </label>
+                <input type="password" pPassword class="w-full" [(ngModel)]="loginForm.password" name="password">
+              </div>
+              <div class="p-field mt-3">
+                <button type="submit" pButton (click)="login()">Đăng nhập</button>
+              </div>
+        </p-tabPanel>
+        <p-tabPanel header="Đăng ký">
+            <form action="">
+                <div class="p-field">
+                    <label for="username">Tên đăng nhập: </label>
+                    <input type="text" pInputText class="w-full" [(ngModel)]="registerForm.username" name="username">
+                </div>
+                <div class="p-field">
+                    <label for="email">Email: </label>
+                    <input type="email" pInputText class="w-full" [(ngModel)]="registerForm.email" name="email">
+                </div>
+                <div class="p-field">
+                    <label for="password">Mật khẩu: </label>
+                    <input type="password" pPassword  class="w-full" [(ngModel)]="registerForm.password" name="password">
+                </div>
+                <div class="p-field mt-3">
+                    <button type="submit" pButton (click)="register()">Đăng ký</button>
+                </div>
+              </form>
+        </p-tabPanel>
+    </p-tabView>
+</p-dialog>
+
+
+
+<header class="header">
+    <div class="container" style="text-align: center;">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="header__logo">
+                    <a href="javascript:void(0)" routerLink="/" ><img src="assets\image\logotour.png" alt=""></a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <nav class="header__menu">
+                    <ul>
+                        <li><a href="javascript:void(0)" routerLink="/">Home</a></li>
+                        <li><a href="javascript:void(0)">Category</a>
+                            <ul class="header__menu__dropdown">
+                                <li><a href="javascript:void(0)" *ngFor="let category of listCategoryEnabled" routerLink="category/{{category.id}}">{{category.name}}</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="javascript:void(0)" routerLink="/blog">Blog</a></li>
+                        <li><a href="javascript:void(0)" routerLink="/contact">Contact</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="col-lg-3">
+                <div class="header__cart">
+                    <ul>
+                        <li><a href="javascript:void(0)" (click)="wishlist.toggle($event)"><fa-icon [icon]="heart"></fa-icon> <span>{{wishlistService.items.length}}</span></a></li>
+                        <p-overlayPanel #wishlist>
+                            <ng-template pTemplate>
+                                <div class="listItemInCart">
+                                    <ul>
+                                        <li *ngFor="let product of wishlistService.items" class="cart-box">
+                                            <div class="cart-box-image p-2">
+                                                <a href="javascript:void(0)" class="block"><img src="{{'data:image/jpg;base64,' + product.images[0].data}}" alt="" width="80px"></a>
+                                            </div>
+                                            <div class="cart-box-text">
+                                                <a href="javascript:void(0)">{{product.name}}</a>
+                                            </div>
+                                            <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-text" (click)="removeWishList(product)"></button>
+                                        </li>
+                                    </ul>   
+                                </div>
+                            </ng-template>
+                        </p-overlayPanel>
+                        <li><a href="javascript:void(0)" (click)="cart.toggle($event)"><fa-icon [icon]="bag"></fa-icon> <span>{{cartService.items.length}}</span></a></li>
+                        <p-overlayPanel #cart>
+                            <ng-template pTemplate>
+                                <div class="listItemInCart">
+                                    <ul>
+                                        <li *ngFor="let product of cartService.items" class="cart-box">
+                                            <div class="cart-box-image p-2">
+                                                <a href="javascript:void(0)" class="block"><img src="{{'data:image/jpg;base64,' + product.images[0].data}}" alt="" width="80px"></a>
+                                            </div>
+                                            <div class="cart-box-text">
+                                                <a href="javascript:void(0)">{{product.name}}</a>
+                                                <div><span>{{product.quantity}} x </span>{{product.price | currency: 'VND'}}</div>
+                                            </div>
+                                            <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-text" (click)="removeFromCart(product)"></button>
+                                        </li>
+                                    </ul>
+                                    <p-divider></p-divider>
+                                    <div class="text-center">
+                                        <strong>Tổng: </strong><span class="ml-2">{{cartService.getTotalPrice() | currency: 'VND'}}</span>
+                                    </div>
+                                    <p-divider></p-divider>
+                                    <div class="cart-button">
+                                        <button pButton pRipple label="GO TO CART" class="w-full p-button-warning" routerLink="cart"></button>
+                                    </div>   
+                                </div>
+                            </ng-template>
+                        </p-overlayPanel>
+                        <li>
+                            <a href="javascript:void(0)" (click)="showAuthForm()" *ngIf="!isLoggedIn"><fa-icon [icon]="userIcon"></fa-icon></a>
+                            <a href="javascript:void(0)" (click)="profile.toggle($event)" *ngIf="isLoggedIn"><fa-icon [icon]="userIcon"></fa-icon></a>
+                            <p-overlayPanel #profile>
+                                <div >
+                                    <a class="dropdown-item" href="javascript:void(0)" routerLink="/user" >
+                                        <fa-icon [icon]="userIcon"></fa-icon>   
+                                        Profile
+                                    </a>
+                                    <a class="dropdown-item" href="javascript:void(0)" routerLink="my-order">
+                                        <fa-icon [icon]="bag"></fa-icon>   
+                                        My Orders
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" style="cursor: pointer;" (click)="logout();profile.toggle($event)" >
+                                        <fa-icon [icon]="logoutIcon"></fa-icon>
+                                        Logout
+                                    </a>
+                                </div>
+                            </p-overlayPanel>
+                        </li>
+                        
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="humberger__open">
+            <i class="fa fa-bars"></i>
+        </div>
+    </div>
+</header>
+<section  class="hero">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-9 justify-space-between">
+                <div class="hero__search">
+                    <div style="margin-left: 20px;" class="hero__search__form">
+                        <form action="#">
+                            <input type="text" placeholder="Search for your destination?" [(ngModel)]="keyword" name="keyword">
+                            <button style="border-radius: 25px;" class="site-btn" routerLink="/search/{{keyword}}">SEARCH</button>
+                        </form>
+                    </div>
+                    <div  class="hero__search__phone">
+                        <div class="hero__search__phone__icon">
+                            <fa-icon [icon]="phone"></fa-icon>
+                        </div>
+                        <div class="hero__search__phone__text">
+                            <h5>+84 358823832</h5>
+                            <span>Hỗ trợ 24/7</span>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<router-outlet></router-outlet>
+
+
+<footer class="footer-distributed">
+
+			<div class="footer-left">
+
+                <div class="col-lg-3">
+                    <div class="header__logo">
+                        <a href="javascript:void(0)" routerLink="/" ><img src="assets\image\logotour.png" alt=""></a>
+                    </div>
+                </div>
+
+				<p class="footer-links">
+					<a href="#" class="link-1">Home</a>
+					
+					<a href="#">Category</a>
+				
+					<a href="#">Block</a>
+				
+					<a href="#">Contact</a>
+
+				</p>
+
+				<p class="footer-company-name">Company Name © 2023</p>
+			</div>
+
+			<div class="footer-center">
+
+				<div>
+					<i class="fa fa-map-marker"></i>
+					<p><span>45/12 đường số 6</span> Chu Văn An, Phường 26, Quận Bình Thạnh</p>
+				</div>
+
+				<div>
+					<i class="fa fa-phone"></i>
+					<p>+84 358823832</p>
+				</div>
+
+				<div>
+					<i class="fa fa-envelope"></i>
+					<p><a href="mailto:support@company.com">contact@gmail.com</a></p>
+				</div>
+
+			</div>
+
+			<div class="footer-right">
+
+				<p class="footer-company-about">
+					<span>About the company</span>
+					Trang web ra đời nhằm đáp ứng các nhu cầu cần thiết của con người, mang con người đến một cuộc sống mới tốt đẹp hơn, tạo được giá trị nhỏ trước khi tạo giá trị lớn.
+				</p>
+
+
+			</div>
+
+		</footer>
